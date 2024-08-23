@@ -1,0 +1,28 @@
+package br.com.henrique.JWT.enums;
+
+public enum OrderStatus {
+    PENDING(1, "PENDENTE"),
+    APPROVED(2, "APROVADO"),
+    REJECTED(3, "NEGADO");
+
+    private final int code;
+    private final String description;
+
+    OrderStatus(int code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return description;
+    }
+}

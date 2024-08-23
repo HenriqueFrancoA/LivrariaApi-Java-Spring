@@ -1,0 +1,29 @@
+package br.com.henrique.JWT.models.dto;
+
+import java.math.BigDecimal;
+
+
+public class BookPriceQuantityDto {
+
+    private BigDecimal price;
+    private Integer stockQuantity;
+
+    public BookPriceQuantityDto() {
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+}
