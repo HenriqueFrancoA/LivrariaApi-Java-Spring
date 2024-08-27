@@ -1,26 +1,39 @@
 package br.com.henrique.JWT.resources;
 
-import br.com.henrique.JWT.models.Payment;
+import br.com.henrique.JWT.models.dto.*;
 import br.com.henrique.JWT.services.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Pagamentos")
 @RestController
 @RequestMapping("/api/payments/v1")
-public class PaymentResource extends GenericResource<Payment, Long>  {
+public class PaymentResource {
 
-    public PaymentResource(PaymentService paymentService) {
-        super(paymentService);
+    @Autowired
+    private PaymentService paymentService;
+
+    @Operation(summary = "Busca um pagamento pelo ID.")
+    @GetMapping("{id}")
+    public ResponseEntity<PaymentDto> findById(@PathVariable Long id){
+        return ResponseEntity.ok(paymentService.findById(id));
     }
 
-    @Override
+    @Operation(summary = "Cria um novo pagamento.")
+    @PostMapping
+    public ResponseEntity<PaymentDto> create(@RequestBody PaymentOrderDto paymentOrderDto) {
+        PaymentDto savedPayment = paymentService.save(paymentOrderDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPayment);
+    }
+
     @Operation(summary = "Busca um pagamento pelo ID e caso exista atualiza o mesmo")
-    public ResponseEntity<Payment> update(Long aLong, Payment entity) {
-        return super.update(aLong, entity);
+    @PutMapping("/status/{id}")
+    public ResponseEntity<PaymentDto> updateStatus(@PathVariable Long id, @RequestBody PaymentStatusDto paymentStatusDto) {
+        return ResponseEntity.ok(paymentService.updateStatus(id, paymentStatusDto));
     }
 
 }

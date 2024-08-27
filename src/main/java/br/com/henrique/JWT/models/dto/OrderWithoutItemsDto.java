@@ -1,24 +1,32 @@
 package br.com.henrique.JWT.models.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import br.com.henrique.JWT.models.User;
 
-public class OrderDto  {
+import java.time.LocalDateTime;
+
+public class OrderWithoutItemsDto {
 
     private Long id;
     private UserDto user;
     private LocalDateTime orderDate;
     private String status;
-    private List<ItemOrderWithoutOrderDto> items;
 
-    public OrderDto() {
+    public OrderWithoutItemsDto() {
     }
 
-    public OrderDto(UserDto user, LocalDateTime orderDate, String status, List<ItemOrderWithoutOrderDto> items) {
+    public OrderWithoutItemsDto(Long id, UserDto user, LocalDateTime orderDate, String status) {
+        this.id = id;
         this.user = user;
         this.orderDate = orderDate;
         this.status = status;
-        this.items = items;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public UserDto getUser() {
@@ -43,13 +51,5 @@ public class OrderDto  {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public List<ItemOrderWithoutOrderDto> getItems() {
-        return items;
-    }
-
-    public void setItems(List<ItemOrderWithoutOrderDto> items) {
-        this.items = items;
     }
 }

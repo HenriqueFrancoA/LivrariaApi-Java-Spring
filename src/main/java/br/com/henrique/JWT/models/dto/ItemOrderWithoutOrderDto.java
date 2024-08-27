@@ -4,16 +4,16 @@ import br.com.henrique.JWT.models.Book;
 
 import java.math.BigDecimal;
 
-public class ItemOrderWithouOrderDto {
+public class ItemOrderWithoutOrderDto {
 
     private Book book;
     private Integer quantity;
     private BigDecimal unitPrice;
 
-    public ItemOrderWithouOrderDto() {
+    public ItemOrderWithoutOrderDto() {
     }
 
-    public ItemOrderWithouOrderDto(Book book, Integer quantity, BigDecimal unitPrice) {
+    public ItemOrderWithoutOrderDto(Book book, Integer quantity, BigDecimal unitPrice) {
         this.book = book;
         this.quantity = quantity;
         this.unitPrice = unitPrice;

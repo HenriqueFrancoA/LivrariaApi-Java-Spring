@@ -1,15 +1,13 @@
 package br.com.henrique.JWT.services;
 
-import br.com.henrique.JWT.enums.OrderStatus;
+import br.com.henrique.JWT.enums.Status;
 import br.com.henrique.JWT.exceptions.ListEmptyException;
-import br.com.henrique.JWT.exceptions.OrderStatusException;
+import br.com.henrique.JWT.exceptions.StatusException;
 import br.com.henrique.JWT.mapper.DozerMapper;
 import br.com.henrique.JWT.models.Book;
 import br.com.henrique.JWT.models.ItemOrder;
 import br.com.henrique.JWT.models.Order;
-import br.com.henrique.JWT.models.dto.ItemOrderAddDto;
-import br.com.henrique.JWT.models.dto.ItemOrderDto;
-import br.com.henrique.JWT.models.dto.ItemOrderListDto;
+import br.com.henrique.JWT.models.dto.*;
 import br.com.henrique.JWT.repositorys.BookRepository;
 import br.com.henrique.JWT.repositorys.ItemOrderRepository;
 import br.com.henrique.JWT.repositorys.OrderRepository;
@@ -64,7 +62,9 @@ public class ItemOrderService {
                 item.getUnitPrice()
             );
 
-            book.setStockQuantity(book.getStockQuantity() - item.getQuantity());
+            int bookQuantityUpdated = verifyBookQuantity(book.getStockQuantity(), item.getQuantity());
+
+            book.setStockQuantity(bookQuantityUpdated);
 
             bookRepository.save(book);
             itemOrderRepository.save(itemOrder);
@@ -74,8 +74,8 @@ public class ItemOrderService {
     }
 
     public void verifyStatus(String status){
-        if(!status.equals(OrderStatus.PENDING.getDescription()))
-            throw new OrderStatusException("O pedido não pode ser atualizado, pois seu status se encontra: " + status);
+        if(!status.equals(Status.PENDING.getDescription()))
+            throw new StatusException("O pedido não pode ser atualizado, pois seu status se encontra: " + status);
 
     }
 
@@ -89,9 +89,56 @@ public class ItemOrderService {
         Book book = bookRepository.findById(itemOrder.getBook().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado."));
 
-        book.setStockQuantity(book.getStockQuantity() + itemOrder.getQuantity());
+        int bookQuantityUpdated = verifyBookQuantity(book.getStockQuantity(), itemOrder.getQuantity());
+
+        book.setStockQuantity(bookQuantityUpdated);
 
         bookRepository.save(book);
         itemOrderRepository.deleteById(id);
+    }
+
+    public ItemOrderDto update(Long id, ItemOrderQuantityDto itemOrderQuantityDto) {
+        logger.info("Atualizando Item, ID: " + id);
+
+        if(itemOrderQuantityDto.getQuantity() < 0)
+            throw new IllegalArgumentException("A quantidade inserida não pode ser negativa.");
+
+        ItemOrder item = itemOrderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Item não encontrado."));
+
+        verifyStatus(item.getOrder().getStatus());
+
+        int differenceAmount =  itemOrderQuantityDto.getQuantity() - item.getQuantity();
+
+        item.setQuantity(itemOrderQuantityDto.getQuantity());
+
+        Book book = bookRepository.findById(item.getBook().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado."));
+
+        int bookQuantityUpdated = verifyBookQuantity(book.getStockQuantity(), differenceAmount);
+
+        book.setStockQuantity(bookQuantityUpdated);
+
+        bookRepository.save(book);
+        itemOrderRepository.save(item);
+
+        return DozerMapper.parseObject( itemOrderRepository.save(item), ItemOrderDto.class);
+    }
+
+    public int verifyBookQuantity(int bookQuantity, int quantity){
+        int bookQuantityUpdated = bookQuantity - quantity;
+
+        if(bookQuantityUpdated < 0)
+            throw new IllegalArgumentException("A quantidade inserida não pode ser maior que a quantidade de livros no estoque.");
+
+        return bookQuantityUpdated;
+    }
+
+    public ItemOrderDto findById(Long id) {
+        logger.info("Procurando Item do ID: " + id);
+        ItemOrder item = itemOrderRepository.findById(id)
+                .orElseThrow(() ->  new EntityNotFoundException("ID do Item não encontrado."));
+
+        return DozerMapper.parseObject(item, ItemOrderDto.class);
     }
 }

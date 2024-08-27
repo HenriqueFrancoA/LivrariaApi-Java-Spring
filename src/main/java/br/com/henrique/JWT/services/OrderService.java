@@ -1,7 +1,7 @@
 package br.com.henrique.JWT.services;
 
-import br.com.henrique.JWT.exceptions.OrderStatusException;
-import br.com.henrique.JWT.exceptions.handler.CustomizedOrderStatusExceptionHandler;
+import br.com.henrique.JWT.enums.Status;
+import br.com.henrique.JWT.exceptions.StatusException;
 import br.com.henrique.JWT.mapper.DozerMapper;
 import br.com.henrique.JWT.models.Book;
 import br.com.henrique.JWT.models.ItemOrder;
@@ -45,10 +45,10 @@ public class OrderService {
         Order ord = orderRepository.findByIdWithItems(id)
                 .orElseThrow(() -> new EntityNotFoundException("ID não encontrado."));
 
-        if(ord.getStatus().equals("NEGADO"))
-            throw new OrderStatusException("O pedido já foi negado e não pode ser atualizado.");
+        if(ord.getStatus().equals(Status.REJECTED.getDescription()))
+            throw new StatusException("O pedido já foi negado e não pode ser atualizado.");
 
-        if(!ord.getStatus().equals("NEGADO") && orderStatus.getStatus().equals("NEGADO")){
+        if(!ord.getStatus().equals(Status.REJECTED.getDescription()) && orderStatus.getStatus().equals(Status.REJECTED.getDescription())){
             Book book;
             for(ItemOrder item : ord.getItems()){
                 book = bookRepository.findById(item.getBook().getId()).orElseThrow(() -> new EntityNotFoundException("ID do Livro não encontrado."));

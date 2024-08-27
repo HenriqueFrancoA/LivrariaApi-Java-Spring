@@ -1,8 +1,8 @@
 package br.com.henrique.JWT.resources;
 
-import br.com.henrique.JWT.models.ItemOrder;
 import br.com.henrique.JWT.models.dto.ItemOrderDto;
 import br.com.henrique.JWT.models.dto.ItemOrderListDto;
+import br.com.henrique.JWT.models.dto.ItemOrderQuantityDto;
 import br.com.henrique.JWT.services.ItemOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,9 +29,9 @@ public class ItemOrderResource  {
     }
 
     @Operation(summary = "Busca um item pelo ID e caso exista atualiza o mesmo.")
-    @PutMapping("/{itemOrderId}")
-    public ResponseEntity<ItemOrder> update(@RequestBody ItemOrder itemOrder){
-        return  null;
+    @PutMapping("/{id}")
+    public ResponseEntity<ItemOrderDto> update(@PathVariable Long id, @RequestBody ItemOrderQuantityDto itemOrderQuantityDto){
+        return ResponseEntity.ok(itemOrderService.update(id, itemOrderQuantityDto));
     }
 
     @Operation(summary = "Remove um item do pedido.")
@@ -39,6 +39,12 @@ public class ItemOrderResource  {
     public ResponseEntity<Void> delete(@PathVariable Long id){
         itemOrderService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Busca um item pelo ID.")
+    @GetMapping("{id}")
+    public ResponseEntity<ItemOrderDto> findById(@PathVariable Long id){
+        return ResponseEntity.ok(itemOrderService.findById(id));
     }
 
 }

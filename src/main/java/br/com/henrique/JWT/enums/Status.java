@@ -1,14 +1,15 @@
 package br.com.henrique.JWT.enums;
 
-public enum OrderStatus {
+public enum Status {
     PENDING(1, "PENDENTE"),
     APPROVED(2, "APROVADO"),
-    REJECTED(3, "NEGADO");
+    REJECTED(3, "NEGADO"),
+    CANCELED(4, "CANCELADO");
 
     private final int code;
     private final String description;
 
-    OrderStatus(int code, String description) {
+    Status(int code, String description) {
         this.code = code;
         this.description = description;
     }
