@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class ItemOrderWithoutOrderDto {
 
-    private Book book;
+    private BookDto book;
     private Integer quantity;
     private BigDecimal unitPrice;
 
@@ -14,17 +14,8 @@ public class ItemOrderWithoutOrderDto {
     }
 
     public ItemOrderWithoutOrderDto(Book book, Integer quantity, BigDecimal unitPrice) {
-        this.book = book;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
     }
 
     public Integer getQuantity() {

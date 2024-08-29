@@ -1,16 +1,16 @@
 package br.com.henrique.JWT.models.dto;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.dozermapper.core.Mapping;
+import org.springframework.hateoas.RepresentationModel;
 
-import br.com.henrique.JWT.models.User;
-import org.springframework.http.ResponseEntity;
+@JsonPropertyOrder({"id", "publicPlaces","number","neighborhood","city","state","zipCode","country"})
+public class AddressDto extends RepresentationModel<AddressDto> {
 
-public class AddressDto implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private Long id;
-    private UserDto userId;
+    @JsonProperty("id")
+    @Mapping("id")
+    private Long key;
     private String publicPlace;
     private String number;
     private String neighborhood;
@@ -22,9 +22,8 @@ public class AddressDto implements Serializable {
     public AddressDto() {
     }
 
-    public AddressDto(Long id, UserDto userId, String publicPlace, String number, String neighborhood, String city, String state, String zipCode, String country) {
-        this.id = id;
-        this.userId = userId;
+    public AddressDto(Long key, String publicPlace, String number, String neighborhood, String city, String state, String zipCode, String country) {
+        this.key = key;
         this.publicPlace = publicPlace;
         this.number = number;
         this.neighborhood = neighborhood;
@@ -34,21 +33,9 @@ public class AddressDto implements Serializable {
         this.country = country;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getKey() {return key;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public UserDto getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UserDto userId) {
-        this.userId = userId;
-    }
+    public void setKey(Long key) {this.key = key;}
 
     public String getPublicPlace() {
         return publicPlace;

@@ -1,24 +1,19 @@
 package br.com.henrique.JWT.services;
 
-import br.com.henrique.JWT.enums.Status;
+import br.com.henrique.JWT.enums.OrderStatus;
+import br.com.henrique.JWT.enums.PaymentStatus;
 import br.com.henrique.JWT.exceptions.StatusException;
 import br.com.henrique.JWT.mapper.DozerMapper;
-import br.com.henrique.JWT.models.Book;
-import br.com.henrique.JWT.models.ItemOrder;
-import br.com.henrique.JWT.models.Order;
-import br.com.henrique.JWT.models.User;
-import br.com.henrique.JWT.models.dto.ItemOrderWithBookDto;
-import br.com.henrique.JWT.models.dto.OrderDto;
-import br.com.henrique.JWT.models.dto.OrderStatusDto;
-import br.com.henrique.JWT.models.dto.OrderWithUserDto;
-import br.com.henrique.JWT.repositorys.BookRepository;
-import br.com.henrique.JWT.repositorys.ItemOrderRepository;
-import br.com.henrique.JWT.repositorys.OrderRepository;
-import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.models.*;
+import br.com.henrique.JWT.models.dto.*;
+import br.com.henrique.JWT.repositorys.*;
+import br.com.henrique.JWT.utils.ValidationUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,18 +35,29 @@ public class OrderService {
     @Autowired
     private ItemOrderRepository itemOrderRepository;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
     public OrderDto updateStatus(Long id, OrderStatusDto orderStatus) {
         logger.info("Atualizando status do Pedido, ID: " + id);
+
+        ValidationUtils.verifyOrderStatus(orderStatus.getStatus());
+
         Order ord = orderRepository.findByIdWithItems(id)
                 .orElseThrow(() -> new EntityNotFoundException("ID não encontrado."));
 
-        if(ord.getStatus().equals(Status.REJECTED.getDescription()))
-            throw new StatusException("O pedido já foi negado e não pode ser atualizado.");
+        if(verifyCanceledOrRejected(ord.getStatus()))
+            throw new StatusException("O pedido já foi " + ord.getStatus() + " e não pode ser atualizado.");
 
-        if(!ord.getStatus().equals(Status.REJECTED.getDescription()) && orderStatus.getStatus().equals(Status.REJECTED.getDescription())){
+        if(verifyCanceledOrRejected(ord.getStatus()) &&
+                verifyCanceledOrRejected(orderStatus.getStatus())){
             Book book;
             for(ItemOrder item : ord.getItems()){
-                book = bookRepository.findById(item.getBook().getId()).orElseThrow(() -> new EntityNotFoundException("ID do Livro não encontrado."));
+                book = bookRepository.findById(item.getBook().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("ID do Livro não encontrado."));
 
                 book.setStockQuantity(book.getStockQuantity() + item.getQuantity());
 
@@ -66,15 +72,52 @@ public class OrderService {
         return DozerMapper.parseObject(ord, OrderDto.class);
     }
 
-    public OrderDto save(OrderWithUserDto orderWithUserDto) {
-        logger.info("Criando pedido.");
+    public OrderDto updateAddress(Long id, OrderAddressDto orderAddressDto) {
+        logger.info("Atualizando status do Pedido, ID: " + id);
 
-        User user = userRepository.findById(orderWithUserDto.getUserId())
+        Order ord = orderRepository.findByIdWithItems(id)
+                .orElseThrow(() -> new EntityNotFoundException("ID do Pedido não encontrado."));
+
+        ValidationUtils.verifyPending(ord.getStatus());
+
+        Address address = addressRepository.findById(orderAddressDto.getAddress())
+                .orElseThrow(() -> new EntityNotFoundException("ID do Endereço não encontrado."));
+
+        if(!address.getUserId().getId().equals(ord.getUser().getId()))
+            throw new IllegalArgumentException("O Endereço não pertence ao Usuário informado.");
+
+        ord.setAddress(address);
+
+        orderRepository.save(ord);
+
+        return DozerMapper.parseObject(ord, OrderDto.class);
+    }
+
+    public boolean verifyCanceledOrRejected(String status){
+        return status.equals(OrderStatus.REJECTED.getDescription()) ||
+                status.equals(OrderStatus.CANCELED.getDescription());
+    }
+
+    public PaymentDto save(OrderWithUserAddressDto orderWithUserAddressDto) {
+        logger.info("Criando pedido...");
+
+        ValidationUtils.verifyPaymentMethod(orderWithUserAddressDto.getPaymentMethod());
+
+        User user = userRepository.findById(orderWithUserAddressDto.getUserId())
                 .orElseThrow(() ->  new EntityNotFoundException("Usuário não encontrado."));
 
+        Address address = addressRepository.findById(orderWithUserAddressDto.getAddressId())
+                .orElseThrow(() ->  new EntityNotFoundException("Endereço não encontrado."));
+
+        if(!address.getUserId().getId().equals(user.getId()))
+            throw new IllegalArgumentException("O Endereço não pertence ao Usuário informado.");
+
         Order order = new Order(
-                orderWithUserDto,
-                user
+                orderWithUserAddressDto,
+                user,
+                address,
+                LocalDateTime.now(),
+                OrderStatus.PENDING.getDescription()
         );
 
        Order orderCreated = orderRepository.save(order);
@@ -82,12 +125,17 @@ public class OrderService {
        Book book;
        ItemOrder itemOrder;
        List<ItemOrder> items = new ArrayList<>();
+       BigDecimal totalValue = BigDecimal.valueOf(0);
 
         logger.info("Inserindo item no pedido: " + orderCreated.getId());
 
-        for (ItemOrderWithBookDto item : orderWithUserDto.getItems()){
+        for (ItemOrderWithBookDto item : orderWithUserAddressDto.getItems()){
 
-           book = bookRepository.findById(item.getBookId())
+            ValidationUtils.verifyValue(item.getUnitPrice());
+
+            ValidationUtils.verifyQuantity(item.getQuantity());
+
+            book = bookRepository.findById(item.getBookId())
                    .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado."));
 
             itemOrder = new ItemOrder(
@@ -97,14 +145,33 @@ public class OrderService {
                     item.getUnitPrice()
             );
 
-            book.setStockQuantity(book.getStockQuantity() - item.getQuantity());
+            int bookQuantityUpdated = ValidationUtils.verifyBookQuantity(book.getStockQuantity(), item.getQuantity());
+
+            book.setStockQuantity(bookQuantityUpdated);
+
             bookRepository.save(book);
             itemOrderRepository.save(itemOrder);
             items.add(itemOrder);
+
+            totalValue = totalValue.add(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
        }
+
+        logger.info("Criando pagamento para o pedido: " + orderCreated.getId());
+
         orderCreated.setItems(items);
 
-        return DozerMapper.parseObject(orderCreated, OrderDto.class);
+        Payment payment = new Payment(
+                null,
+                orderCreated,
+                orderWithUserAddressDto.getPaymentMethod(),
+                totalValue,
+                LocalDateTime.now(),
+                PaymentStatus.WAITING.getDescription()
+        );
+
+        paymentRepository.save(payment);
+
+        return DozerMapper.parseObject(payment, PaymentDto.class);
     }
 
     public OrderDto findById(Long id) {
@@ -115,9 +182,14 @@ public class OrderService {
         return DozerMapper.parseObject(order, OrderDto.class);
     }
 
-    public List<OrderDto> findAll() {
-        logger.info("Retornando todos pedidos...");
-        List<Order> listOrders = orderRepository.findAllWithItems();
-        return DozerMapper.parseListObjects(listOrders, OrderDto.class);
+    public List<OrderDto> findByUser(Long id) {
+        logger.info("Procurando pedidos do User: " + id);
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->  new EntityNotFoundException("ID do Usuário não encontrado."));
+
+        return  DozerMapper.parseListObjects(orderRepository.findByUser(user), OrderDto.class);
     }
+
+
 }

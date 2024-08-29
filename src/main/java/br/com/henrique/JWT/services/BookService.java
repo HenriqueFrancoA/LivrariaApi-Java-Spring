@@ -8,6 +8,7 @@ import br.com.henrique.JWT.repositorys.AuthorRepository;
 import br.com.henrique.JWT.repositorys.BookRepository;
 import br.com.henrique.JWT.repositorys.CategoryRepository;
 import br.com.henrique.JWT.repositorys.PublisherRepository;
+import br.com.henrique.JWT.utils.ValidationUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class BookService  {
         logger.info("Atualizando Livro, ID: " + id);
         Book bo = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ID não encontrado."));
+
+        ValidationUtils.verifyQuantity(bookPriceQuantity.getStockQuantity());
+        ValidationUtils.verifyValue(bookPriceQuantity.getPrice());
 
         bo.setPrice(bookPriceQuantity.getPrice());
         bo.setStockQuantity(bookPriceQuantity.getStockQuantity());

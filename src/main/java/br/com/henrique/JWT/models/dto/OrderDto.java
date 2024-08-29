@@ -10,15 +10,18 @@ public class OrderDto  {
     private LocalDateTime orderDate;
     private String status;
     private List<ItemOrderWithoutOrderDto> items;
+    private AddressDto address;
 
     public OrderDto() {
     }
 
-    public OrderDto(UserDto user, LocalDateTime orderDate, String status, List<ItemOrderWithoutOrderDto> items) {
+    public OrderDto(Long id, UserDto user, LocalDateTime orderDate, String status, List<ItemOrderWithoutOrderDto> items, AddressDto address) {
+        this.id = id;
         this.user = user;
         this.orderDate = orderDate;
         this.status = status;
         this.items = items;
+        this.address = address;
     }
 
     public UserDto getUser() {
@@ -52,4 +55,12 @@ public class OrderDto  {
     public void setItems(List<ItemOrderWithoutOrderDto> items) {
         this.items = items;
     }
+
+    public Long getId() {return id;}
+
+    public void setId(Long id) {this.id = id;}
+
+    public AddressDto getAddress() {return address;}
+
+    public void setAddress(AddressDto address) {this.address = address;}
 }

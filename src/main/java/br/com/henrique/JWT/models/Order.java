@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import br.com.henrique.JWT.models.dto.OrderWithUserDto;
+import br.com.henrique.JWT.models.dto.OrderWithUserAddressDto;
 import jakarta.persistence.*;
 
 @Entity
@@ -29,29 +29,27 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order")
     private List<ItemOrder> items;
 
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
     public Order() {
     }
 
-    public Order(Order order) {
-        this.id = order.getId();
-        this.user = order.getUser();
-        this.orderDate = order.getOrderDate();
-        this.status = order.getStatus();
-        this.items = order.getItems();
-    }
-
-    public Order(OrderWithUserDto orderWithUserDto, User user) {
+    public Order(OrderWithUserAddressDto orderWithUserDto, User user, Address address, LocalDateTime localDateTime, String status) {
         this.user = user;
-        this.orderDate = orderWithUserDto.getOrderDate();
-        this.status = orderWithUserDto.getStatus();
+        this.orderDate = localDateTime;
+        this.status = status;
+        this.address = address;
     }
 
-    public Order(Long id, User user, LocalDateTime orderDate, String status, List<ItemOrder> items) {
+    public Order(Long id, User user, LocalDateTime orderDate, String status, List<ItemOrder> items, Address address) {
         this.id = id;
         this.user = user;
         this.orderDate = orderDate;
         this.status = status;
         this.items = items;
+        this.address = address;
     }
 
     public Long getId() {
@@ -93,5 +91,9 @@ public class Order implements Serializable {
     public void setItems(List<ItemOrder> items) {
         this.items = items;
     }
+
+    public Address getAddress() {return address;}
+
+    public void setAddress(Address address) {this.address = address;}
 
 }

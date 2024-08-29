@@ -14,7 +14,7 @@ import java.util.Date;
 public class CustomizedStatusExceptionHandler {
 
 	@ExceptionHandler(StatusException.class)
-	public final ResponseEntity<ExceptionResponse> handleOrderStatusExceptions(
+	public final ResponseEntity<ExceptionResponse> handleStatusExceptions(
 			StatusException ex, WebRequest request) {
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(

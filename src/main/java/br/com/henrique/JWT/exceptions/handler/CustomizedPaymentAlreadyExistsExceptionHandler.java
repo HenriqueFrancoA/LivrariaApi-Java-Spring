@@ -14,7 +14,7 @@ import java.util.Date;
 public class CustomizedPaymentAlreadyExistsExceptionHandler {
 
 	@ExceptionHandler(PaymentAlreadyExistsException.class)
-	public final ResponseEntity<ExceptionResponse> handleOrderStatusExceptions(
+	public final ResponseEntity<ExceptionResponse> handlePaymentAlreadyExistsExceptions(
 			PaymentAlreadyExistsException ex, WebRequest request) {
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(

@@ -8,9 +8,13 @@ import br.com.henrique.JWT.models.dto.AddressWithoutUserDto;
 import br.com.henrique.JWT.models.dto.AddressWithUserDto;
 import br.com.henrique.JWT.repositorys.AddressRepository;
 import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.resources.AddressResource;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -52,12 +56,22 @@ public class AddressService  {
                 user
         );
 
-        return DozerMapper.parseObject( addressRepository.save(address), AddressDto.class);
+        AddressDto addressDto = DozerMapper.parseObject( addressRepository.save(address), AddressDto.class);
+        addressDto.add(linkTo(methodOn(AddressResource.class).findById(addressDto.getKey())).withSelfRel());
+
+        return addressDto;
     }
 
     public List<AddressDto> findAll() {
         logger.info("Retornando todos endereços...");
-        return DozerMapper.parseListObjects(addressRepository.findAll(), AddressDto.class);
+
+        List<AddressDto> listAddress = DozerMapper.parseListObjects(addressRepository.findAll(), AddressDto.class);
+
+        for (AddressDto a : listAddress) {
+            a.add(linkTo(methodOn(AddressResource.class).findById(a.getKey())).withSelfRel());
+        }
+
+        return listAddress;
     }
 
     public AddressDto findById(Long id) {
@@ -65,7 +79,10 @@ public class AddressService  {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() ->  new EntityNotFoundException("ID do Endereço não encontrado."));
 
-        return DozerMapper.parseObject(address, AddressDto.class);
+        AddressDto addressDto = DozerMapper.parseObject(address, AddressDto.class);
+        addressDto.add(linkTo(methodOn(AddressResource.class).findById(id)).withSelfRel());
+
+        return addressDto;
     }
 
     public void delete(Long id) {

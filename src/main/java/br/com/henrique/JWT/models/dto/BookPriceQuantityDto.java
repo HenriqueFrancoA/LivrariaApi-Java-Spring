@@ -11,6 +11,11 @@ public class BookPriceQuantityDto {
     public BookPriceQuantityDto() {
     }
 
+    public BookPriceQuantityDto(BigDecimal price, Integer stockQuantity) {
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -19,11 +24,7 @@ public class BookPriceQuantityDto {
         this.price = price;
     }
 
-    public Integer getStockQuantity() {
-        return stockQuantity;
-    }
+    public Integer getStockQuantity() {return stockQuantity;}
 
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
+    public void setStockQuantity(Integer stockQuantity) {this.stockQuantity = stockQuantity;}
 }

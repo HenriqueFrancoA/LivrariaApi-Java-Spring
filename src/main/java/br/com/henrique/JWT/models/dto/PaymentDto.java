@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class PaymentDto{
 
-    private OrderWithoutItemsDto order;
+    private OrderDto order;
     private String paymentMethod;
     private BigDecimal value;
     private LocalDateTime paymentDate;
@@ -15,7 +15,7 @@ public class PaymentDto{
     public PaymentDto() {
     }
 
-    public PaymentDto(OrderWithoutItemsDto order, String paymentMethod, BigDecimal value, LocalDateTime paymentDate, String status) {
+    public PaymentDto(OrderDto order, String paymentMethod, BigDecimal value, LocalDateTime paymentDate, String status) {
         this.order = order;
         this.paymentMethod = paymentMethod;
         this.value = value;
@@ -23,17 +23,11 @@ public class PaymentDto{
         this.status = status;
     }
 
-    public OrderWithoutItemsDto getOrder() {
-        return order;
-    }
+    public OrderDto getOrder() {return order;}
 
-    public void setOrder(OrderWithoutItemsDto order) {
-        this.order = order;
-    }
+    public void setOrder(OrderDto order) {this.order = order;}
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
+    public String getPaymentMethod() {return paymentMethod;}
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;

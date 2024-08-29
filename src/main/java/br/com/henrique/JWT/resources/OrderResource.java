@@ -1,8 +1,6 @@
 package br.com.henrique.JWT.resources;
 
-import br.com.henrique.JWT.models.dto.OrderDto;
-import br.com.henrique.JWT.models.dto.OrderStatusDto;
-import br.com.henrique.JWT.models.dto.OrderWithUserDto;
+import br.com.henrique.JWT.models.dto.*;
 import br.com.henrique.JWT.services.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,11 +20,10 @@ public class OrderResource {
     private OrderService orderService;
 
     @Operation(summary = "Busca todos endereços cadastrados.")
-    @GetMapping
-    public List<OrderDto> findAll(){
-        return orderService.findAll();
+    @GetMapping("/user/{id}")
+    public List<OrderDto> findByUser(@PathVariable Long id){
+        return orderService.findByUser(id);
     }
-
 
     @Operation(summary = "Busca um pedido pelo ID.")
     @GetMapping("{id}")
@@ -40,11 +37,17 @@ public class OrderResource {
         return ResponseEntity.ok(orderService.updateStatus(id, orderStatus));
     }
 
+    @Operation(summary = "Busca um pedido pelo ID e caso exista atualiza o endereço")
+    @PutMapping("/address/{id}")
+    public ResponseEntity<OrderDto> updateAddress(@PathVariable Long id, @RequestBody OrderAddressDto orderAddressDto) {
+        return ResponseEntity.ok(orderService.updateAddress(id, orderAddressDto));
+    }
+
     @Operation(summary = "Cria um novo pedido.")
     @PostMapping
-    public ResponseEntity<OrderDto> create(@RequestBody OrderWithUserDto orderWithUserDto){
-        OrderDto savedOrder = orderService.save(orderWithUserDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedOrder);
+    public ResponseEntity<PaymentDto> create(@RequestBody OrderWithUserAddressDto orderWithUserDto){
+        PaymentDto savedPayment = orderService.save(orderWithUserDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPayment);
     }
 
 }
