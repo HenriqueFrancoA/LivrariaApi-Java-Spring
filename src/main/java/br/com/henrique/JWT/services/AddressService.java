@@ -43,7 +43,11 @@ public class AddressService  {
         adr.setZipCode(adressWithoutUserDto.getZipCode());
         adr.setCountry(adressWithoutUserDto.getCountry());
 
-        return  DozerMapper.parseObject( addressRepository.save(adr), AddressDto.class) ;
+        AddressDto addressDto =  DozerMapper.parseObject( addressRepository.save(adr), AddressDto.class) ;
+
+        addressDto.add(linkTo(methodOn(AddressResource.class).findById(addressDto.getKey())).withSelfRel());
+
+        return addressDto;
     }
 
     public AddressDto save(AddressWithUserDto addressWithUserDto) {
