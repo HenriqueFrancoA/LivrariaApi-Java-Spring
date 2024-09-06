@@ -4,20 +4,25 @@ import br.com.henrique.JWT.mapper.DozerMapper;
 import br.com.henrique.JWT.models.Address;
 import br.com.henrique.JWT.models.User;
 import br.com.henrique.JWT.models.dto.AddressDto;
-import br.com.henrique.JWT.models.dto.AddressWithoutUserDto;
 import br.com.henrique.JWT.models.dto.AddressWithUserDto;
+import br.com.henrique.JWT.models.dto.AddressWithoutUserDto;
 import br.com.henrique.JWT.repositorys.AddressRepository;
 import br.com.henrique.JWT.repositorys.UserRepository;
 import br.com.henrique.JWT.resources.AddressResource;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+
+import java.util.logging.Logger;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-
-import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class AddressService  {
@@ -26,6 +31,9 @@ public class AddressService  {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private PagedResourcesAssembler<AddressDto> assembler;
 
     @Autowired
     private UserRepository userRepository;
@@ -43,7 +51,7 @@ public class AddressService  {
         adr.setZipCode(adressWithoutUserDto.getZipCode());
         adr.setCountry(adressWithoutUserDto.getCountry());
 
-        AddressDto addressDto =  DozerMapper.parseObject( addressRepository.save(adr), AddressDto.class) ;
+        AddressDto addressDto =  DozerMapper.parseObject( addressRepository.save(adr), AddressDto.class);
 
         addressDto.add(linkTo(methodOn(AddressResource.class).findById(addressDto.getKey())).withSelfRel());
 
@@ -66,16 +74,19 @@ public class AddressService  {
         return addressDto;
     }
 
-    public List<AddressDto> findAll() {
+    public PagedModel<EntityModel<AddressDto>> findAll(Pageable pageable) {
         logger.info("Retornando todos endereços...");
 
-        List<AddressDto> listAddress = DozerMapper.parseListObjects(addressRepository.findAll(), AddressDto.class);
+        Page<Address> addressPage = addressRepository.findAll(pageable);
 
-        for (AddressDto a : listAddress) {
-            a.add(linkTo(methodOn(AddressResource.class).findById(a.getKey())).withSelfRel());
-        }
+        Page<AddressDto> addressDtoPage = addressPage.map(a -> DozerMapper.parseObject(a, AddressDto.class));
 
-        return listAddress;
+        addressDtoPage.map(a -> a.add(linkTo(methodOn(AddressResource.class).findById(a.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(AddressResource.class)
+                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+
+        return assembler.toModel(addressDtoPage, link);
     }
 
     public AddressDto findById(Long id) {

@@ -47,9 +47,10 @@ public class AuthResource {
 
     @SuppressWarnings("rawtypes")
     @Operation(summary = "Atualiza o token do usuário.")
-    @PutMapping(value = "/refresh/{username}")
-    public ResponseEntity refreshToken(@PathVariable("username") String username,
+    @PutMapping("/refresh/{username}")
+    public ResponseEntity refreshToken(@PathVariable String username,
             @RequestHeader("Authorization") String refreshToken) {
+        System.out.println("Aqui passou... " + username + " com token: " + refreshToken);
         if (checkIfParamsIsNotNull(username) || checkIfParamsIsNotNull(refreshToken))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Requisição inválida.");
 

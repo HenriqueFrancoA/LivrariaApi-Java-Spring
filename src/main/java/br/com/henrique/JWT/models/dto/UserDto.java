@@ -1,27 +1,31 @@
 package br.com.henrique.JWT.models.dto;
 
-public class UserDto{
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.dozermapper.core.Mapping;
+import org.springframework.hateoas.RepresentationModel;
 
-    private Long id;
+@JsonPropertyOrder({"id", "fullName","enabled"})
+public class UserDto extends RepresentationModel<UserDto> {
+
+    @JsonProperty("id")
+    @Mapping("id")
+    private Long key;
     private String fullName;
     private Boolean enabled;
 
     public UserDto() {
     }
 
-    public UserDto(Long id, String fullName, Boolean enabled) {
-        this.id = id;
+    public UserDto(Long key, String fullName, Boolean enabled) {
+        this.key = key;
         this.fullName = fullName;
         this.enabled = enabled;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getKey() {return key;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setKey(Long key) {this.key = key;}
 
     public String getFullName() {
         return fullName;

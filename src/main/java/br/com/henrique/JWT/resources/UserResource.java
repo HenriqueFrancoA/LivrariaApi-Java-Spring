@@ -1,9 +1,7 @@
 package br.com.henrique.JWT.resources;
 
-import br.com.henrique.JWT.models.dto.AddressDto;
-import br.com.henrique.JWT.models.dto.AddressWithoutUserDto;
-import br.com.henrique.JWT.models.dto.AddressWithUserDto;
-import br.com.henrique.JWT.services.AddressService;
+import br.com.henrique.JWT.models.dto.*;
+import br.com.henrique.JWT.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,29 +11,23 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Endereços", description = "Endpoints para o gerenciamento de Endereços")
+@Tag(name = "Usuários", description = "Endpoints para o gerenciamento de Usuários")
 @RestController
-@RequestMapping("/api/address/v1")
-public class AddressResource {
+@RequestMapping("/api/user/v1")
+public class UserResource {
 
     @Autowired
-    private AddressService addressService;
+    private UserService userService;
 
     @GetMapping
-    @Operation(summary = "Busca todos endereços cadastrados.",
-        tags = "Endereços",
+    @Operation(summary = "Busca todos usuários cadastrados.",
+        tags = "Usuários",
         security = @SecurityRequirement(name = "bearerAuth"),
         responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = {
@@ -50,22 +42,15 @@ public class AddressResource {
             @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
         }
     )
-    public ResponseEntity<PagedModel<EntityModel<AddressDto>>> findAll(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "limit", defaultValue = "15") Integer limit,
-            @RequestParam(value = "direction", defaultValue = "asc") String direction
-            ) {
-        Sort.Direction sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
-
-        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "id"));
-        return ResponseEntity.ok(addressService.findAll(pageable));
+    public List<UserDto> findAll(){
+        return userService.findAll();
     }
 
     @GetMapping("{id}")
-    @Operation(summary = "Busca um endereço",
+    @Operation(summary = "Busca um usuário",
             security = @SecurityRequirement(name = "bearerAuth"),
-            description = "Busca um endereço pelo seu ID",
-            tags = "Endereços",
+            description = "Busca um usuário pelo seu ID",
+            tags = "Usuários",
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = AddressDto.class))
@@ -77,17 +62,17 @@ public class AddressResource {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<AddressDto> findById(
+    public ResponseEntity<UserDto> findById(
             @PathVariable
-            @Parameter(description = "O id do endereço a ser encontrado")
+            @Parameter(description = "O id do usuário a ser encontrado")
             Long id){
-        return ResponseEntity.ok(addressService.findById(id));
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Busca um endereço pelo ID e caso exista atualiza o mesmo",
+    @Operation(summary = "Busca um usuário pelo ID e caso exista atualiza o mesmo",
             security = @SecurityRequirement(name = "bearerAuth"),
-            tags = "Endereços",
+            tags = "Usuários",
             responses = {
                     @ApiResponse(description = "Updated", responseCode = "200",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = AddressDto.class))
@@ -98,14 +83,14 @@ public class AddressResource {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<AddressDto> update(@PathVariable Long id, @RequestBody AddressWithoutUserDto addressWithoutUserDto) {
-        return ResponseEntity.ok(addressService.update(id, addressWithoutUserDto));
+    public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserFullnameDto userFullname) {
+        return ResponseEntity.ok(userService.update(id, userFullname));
     }
 
     @PostMapping
-    @Operation(summary = "Cria um novo endreço.",
+    @Operation(summary = "Cria um novo usuário.",
             security = @SecurityRequirement(name = "bearerAuth"),
-            tags = "Endereços",
+            tags = "Usuários",
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = AddressDto.class))
@@ -115,28 +100,9 @@ public class AddressResource {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<AddressDto> create(@RequestBody AddressWithUserDto addressWithUserDto) {
-        AddressDto savedAddress = addressService.save(addressWithUserDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
+    public ResponseEntity<UserDto> create(@RequestBody UserToCreateDto userToCreateDto) {
+        UserDto savedUser = userService.save(userToCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Deleta o endereço pelo ID",
-            security = @SecurityRequirement(name = "bearerAuth"),
-            tags = "Endereços",
-            responses = {
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
-    public ResponseEntity<Void> delete(
-            @PathVariable
-            @Parameter(description = "O id do endereço a ser deletado")
-            Long id) {
-        addressService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 }

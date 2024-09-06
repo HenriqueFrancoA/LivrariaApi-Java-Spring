@@ -21,6 +21,7 @@ import br.com.henrique.JWT.exceptions.InvalidJwtAuthenticationException;
 import br.com.henrique.JWT.models.vo.TokenVO;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 public class JwtTokenProvider {
@@ -69,14 +70,15 @@ public class JwtTokenProvider {
 
     private String getAccessToken(String username, List<String> roles, Date now, Date validity) {
 
-        // String issuerUrl = ServletUriComponentsBuilder
-        // .fromCurrentContextPath().build().toUriString();
+        String issuerUrl = ServletUriComponentsBuilder
+        .fromCurrentContextPath().build().toUriString();
 
         return JWT.create()
                 .withClaim("roles", roles)
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .withSubject(username)
+                .withIssuer(issuerUrl)
                 .sign(algorithm)
                 .strip();
     }
@@ -87,6 +89,7 @@ public class JwtTokenProvider {
                 .withClaim("roles", roles)
                 .withIssuedAt(now)
                 .withExpiresAt(validityRefreshToken)
+                .withSubject(username)
                 .sign(algorithm)
                 .strip();
     }
