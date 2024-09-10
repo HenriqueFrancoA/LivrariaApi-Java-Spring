@@ -1,7 +1,7 @@
 package br.com.henrique.JWT.services;
 
 import br.com.henrique.JWT.models.Publisher;
-import br.com.henrique.JWT.repositorys.PublisherRepository;
+import br.com.henrique.JWT.repositories.PublisherRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

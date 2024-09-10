@@ -5,8 +5,8 @@ import br.com.henrique.JWT.models.User;
 import br.com.henrique.JWT.models.dto.AddressDto;
 import br.com.henrique.JWT.models.dto.AddressWithUserDto;
 import br.com.henrique.JWT.models.dto.AddressWithoutUserDto;
-import br.com.henrique.JWT.repositorys.AddressRepository;
-import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.repositories.AddressRepository;
+import br.com.henrique.JWT.repositories.UserRepository;
 import br.com.henrique.JWT.services.AddressService;
 import br.com.henrique.JWT.unittests.mapper.mocks.MockAddress;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,11 +19,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -190,47 +188,4 @@ class AddressServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-   /** @Test
-    void testFindAll(){
-        List<Address> listAddress = input.mockEntityList();
-
-        when(addressRepository.findAll()).thenReturn(listAddress);
-
-        List<AddressDto> result = addressService.findAll();
-
-        assertNotNull(result);
-        assertEquals(14, result.size());
-
-        AddressDto addressOne = result.get(1);
-
-        assertNotNull(addressOne);
-        assertNotNull(addressOne.getKey());
-        assertNotNull(addressOne.getLinks());
-
-        assertTrue(addressOne.toString().contains("links: [</api/address/v1/1>;rel=\"self\"]"));
-
-        assertEquals("City Test1", addressOne.getCity());
-        assertEquals("Country Test1", addressOne.getCountry());
-        assertEquals("Neighborhood Test1", addressOne.getNeighborhood());
-        assertEquals("State Test1", addressOne.getState());
-        assertEquals("ZipCode Test1", addressOne.getZipCode());
-        assertEquals("Public Place Test1", addressOne.getPublicPlace());
-        assertEquals("Number Test1", addressOne.getNumber());
-
-        AddressDto addressFive = result.get(5);
-
-        assertNotNull(addressFive);
-        assertNotNull(addressFive.getKey());
-        assertNotNull(addressFive.getLinks());
-
-        assertTrue(addressFive.toString().contains("links: [</api/address/v1/5>;rel=\"self\"]"));
-
-        assertEquals("City Test5", addressFive.getCity());
-        assertEquals("Country Test5", addressFive.getCountry());
-        assertEquals("Neighborhood Test5", addressFive.getNeighborhood());
-        assertEquals("State Test5", addressFive.getState());
-        assertEquals("ZipCode Test5", addressFive.getZipCode());
-        assertEquals("Public Place Test5", addressFive.getPublicPlace());
-        assertEquals("Number Test5", addressFive.getNumber());
-    }**/
 }

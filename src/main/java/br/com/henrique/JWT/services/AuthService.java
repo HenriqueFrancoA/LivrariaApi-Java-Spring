@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import br.com.henrique.JWT.models.User;
 import br.com.henrique.JWT.models.vo.AccountCredentialsVO;
 import br.com.henrique.JWT.models.vo.TokenVO;
-import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.repositories.UserRepository;
 import br.com.henrique.JWT.security.jwt.JwtTokenProvider;
 
 @Service

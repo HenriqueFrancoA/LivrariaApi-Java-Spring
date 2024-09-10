@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.henrique.JWT.models.Author;
-import br.com.henrique.JWT.repositorys.AuthorRepository;
+import br.com.henrique.JWT.repositories.AuthorRepository;
 
 import java.util.logging.Logger;
 

@@ -6,7 +6,7 @@ import br.com.henrique.JWT.exceptions.StatusException;
 import br.com.henrique.JWT.mapper.DozerMapper;
 import br.com.henrique.JWT.models.*;
 import br.com.henrique.JWT.models.dto.*;
-import br.com.henrique.JWT.repositorys.*;
+import br.com.henrique.JWT.repositories.*;
 import br.com.henrique.JWT.utils.ValidationUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package br.com.henrique.JWT.repositorys;
+package br.com.henrique.JWT.repositories;
 
 import br.com.henrique.JWT.models.Order;
 import br.com.henrique.JWT.models.User;

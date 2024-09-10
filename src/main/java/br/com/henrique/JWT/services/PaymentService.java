@@ -1,12 +1,11 @@
 package br.com.henrique.JWT.services;
 
-import br.com.henrique.JWT.enums.PaymentStatus;
 import br.com.henrique.JWT.mapper.DozerMapper;
 import br.com.henrique.JWT.models.Payment;
 import br.com.henrique.JWT.models.dto.PaymentDto;
 import br.com.henrique.JWT.models.dto.PaymentStatusDto;
-import br.com.henrique.JWT.repositorys.OrderRepository;
-import br.com.henrique.JWT.repositorys.PaymentRepository;
+import br.com.henrique.JWT.repositories.OrderRepository;
+import br.com.henrique.JWT.repositories.PaymentRepository;
 import br.com.henrique.JWT.utils.ValidationUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

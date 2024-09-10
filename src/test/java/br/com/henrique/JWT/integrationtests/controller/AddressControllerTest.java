@@ -9,13 +9,12 @@ import br.com.henrique.JWT.models.Permission;
 import br.com.henrique.JWT.models.User;
 import br.com.henrique.JWT.models.dto.AddressWithUserDto;
 import br.com.henrique.JWT.models.vo.AccountCredentialsVO;
-import br.com.henrique.JWT.repositorys.PermissionRepository;
-import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.repositories.PermissionRepository;
+import br.com.henrique.JWT.repositories.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -218,22 +217,6 @@ public class AddressControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
-    public void testDelete() throws JsonProcessingException {
-
-        mockAddress();
-
-        given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                    .pathParams("id", createdUserId)
-                    .when()
-                    .delete("{id}")
-                .then()
-                    .statusCode(204);
-
-    }
-
-    @Test
-    @Order(5)
     public void testFindAll() throws JsonProcessingException {
           String content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
@@ -246,12 +229,30 @@ public class AddressControllerTest extends AbstractIntegrationTest {
                             .asString();
 
           WrapperAddressDto wrapperAddressDto = objectMapper.readValue(content, WrapperAddressDto.class);
-          //List<AddressDto> listAddressDto = wrapperAddressDto.getEmbedded().getAddressDtoList();
+          List<AddressDto> listAddressDto = wrapperAddressDto.getEmbedded().getAddressDtoList();
 
-          assertTrue(wrapperAddressDto.getEmbedded() == null);
+          //assertTrue(wrapperAddressDto.getEmbedded() == null);
+          assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/api/address/v1/1\"}}"));
+          assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/api/address/v1?page=0&limit=15&direction=asc\"}}"));
 
-          //AddressDto address = listAddressDto.get(0);
-          //assertEquals("669", address.getNumber());
+          AddressDto address = listAddressDto.get(0);
+          assertEquals("669", address.getNumber());
+
+    }
+
+    @Test
+    @Order(5)
+    public void testDelete() throws JsonProcessingException {
+
+        mockAddress();
+
+        given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .pathParams("id", createdUserId)
+                .when()
+                .delete("{id}")
+                .then()
+                .statusCode(204);
 
     }
 

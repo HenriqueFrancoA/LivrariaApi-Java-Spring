@@ -1,7 +1,7 @@
 package br.com.henrique.JWT.services;
 
 import br.com.henrique.JWT.models.Category;
-import br.com.henrique.JWT.repositorys.CategoryRepository;
+import br.com.henrique.JWT.repositories.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

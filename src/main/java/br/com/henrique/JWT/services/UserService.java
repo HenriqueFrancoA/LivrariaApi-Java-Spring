@@ -16,8 +16,8 @@ import br.com.henrique.JWT.models.dto.UserDto;
 import br.com.henrique.JWT.models.dto.UserFullnameDto;
 import br.com.henrique.JWT.models.dto.UserToCreateDto;
 import br.com.henrique.JWT.models.embedd.UserPermissionId;
-import br.com.henrique.JWT.repositorys.PermissionRepository;
-import br.com.henrique.JWT.repositorys.UserPermissionRepository;
+import br.com.henrique.JWT.repositories.PermissionRepository;
+import br.com.henrique.JWT.repositories.UserPermissionRepository;
 import br.com.henrique.JWT.resources.UserResource;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.Secret
 
 
 import br.com.henrique.JWT.models.User;
-import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.repositories.UserRepository;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

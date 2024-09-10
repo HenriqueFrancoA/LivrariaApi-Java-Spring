@@ -1,4 +1,4 @@
-package br.com.henrique.JWT.repositorys;
+package br.com.henrique.JWT.repositories;
 
 import br.com.henrique.JWT.models.Category;
 import org.springframework.data.jpa.repository.JpaRepository;

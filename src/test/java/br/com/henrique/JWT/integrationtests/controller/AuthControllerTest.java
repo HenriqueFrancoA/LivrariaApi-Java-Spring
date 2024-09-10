@@ -6,8 +6,8 @@ import br.com.henrique.JWT.integrationtests.testcontainers.AbstractIntegrationTe
 import br.com.henrique.JWT.models.Permission;
 import br.com.henrique.JWT.models.User;
 import br.com.henrique.JWT.models.vo.AccountCredentialsVO;
-import br.com.henrique.JWT.repositorys.PermissionRepository;
-import br.com.henrique.JWT.repositorys.UserRepository;
+import br.com.henrique.JWT.repositories.PermissionRepository;
+import br.com.henrique.JWT.repositories.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
