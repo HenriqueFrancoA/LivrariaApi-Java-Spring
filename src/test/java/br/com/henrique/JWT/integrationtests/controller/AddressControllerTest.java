@@ -90,13 +90,13 @@ public class AddressControllerTest extends AbstractIntegrationTest {
 
         User userCreated = userRepository.save(user);
 
-        createdUserId = userCreated.getId();
+        createdUserId = 5L;
     }
 
     @Test
     @Order(1)
     public void testAuthentication() throws JsonProcessingException {
-        AccountCredentialsVO user = new AccountCredentialsVO("testuser", "123456");
+        AccountCredentialsVO user = new AccountCredentialsVO("henrique", "123456");
 
         String accessToken = given()
                 .basePath("/auth/signin")
@@ -236,7 +236,7 @@ public class AddressControllerTest extends AbstractIntegrationTest {
           assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/api/address/v1?page=0&limit=15&direction=asc\"}}"));
 
           AddressDto address = listAddressDto.get(0);
-          assertEquals("669", address.getNumber());
+          assertEquals("920", address.getNumber());
 
     }
 
